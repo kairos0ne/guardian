@@ -138,7 +138,7 @@ defmodule Guardian.Permissions do
       defdelegate max(), to: Guardian.Permissions
 
       raw_perms = @config_with_key.(:permissions)
-      new_perms = Application.get_env(__MODULE__, :permissions, %{})
+      new_perms = Application.get_env(@otp_app, __MODULE__)[:permissions]
       fin_perms = Map.merge(raw_perms, new_perms)
 
       unless raw_perms do
