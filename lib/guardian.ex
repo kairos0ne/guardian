@@ -321,7 +321,6 @@ defmodule Guardian do
 
   defmacro __using__(opts \\ []) do
     otp_app = Keyword.get(opts, :otp_app)
-    @otp_app otp_app
     # credo:disable-for-next-line Credo.Check.Refactor.LongQuoteBlocks
     quote do
       @behaviour Guardian
@@ -336,7 +335,7 @@ defmodule Guardian do
           Macro.Env.location(__ENV__)
         )
       end
-
+      @otp_app unquote(otp_app)
       the_otp_app = unquote(otp_app)
       the_opts = unquote(opts)
 
