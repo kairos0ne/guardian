@@ -358,6 +358,11 @@ defmodule Guardian do
       @spec default_token_type() :: String.t()
       def default_token_type, do: "access"
 
+      # update config for mudule
+
+      def update_config() do
+        @config.()
+      end
       @doc """
       Fetches the configuration for this module.
       """
