@@ -137,8 +137,8 @@ defmodule Guardian.Permissions do
 
       defdelegate max(), to: Guardian.Permissions
 
-      raw_perms = @config_with_key.(:permissions)
-
+      # raw_perms = @config_with_key.(:permissions)
+      raw_perms = Map.merge(@config_with_key.(:permissions), Application.get_env(__MODULE__, :permissions, %{}))
       unless raw_perms do
         raise "Permissions are not defined for #{to_string(__MODULE__)}"
       end
