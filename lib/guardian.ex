@@ -361,7 +361,7 @@ defmodule Guardian do
       # update config for mudule
 
       def update_config() do
-        @config.()
+        unquote(@config.())
       end
       @doc """
       Fetches the configuration for this module.
