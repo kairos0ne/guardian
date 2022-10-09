@@ -136,9 +136,9 @@ defmodule Guardian.Permissions do
       import unquote(Keyword.get(opts, :encoding, Guardian.Permissions.BitwiseEncoding))
 
       defdelegate max(), to: Guardian.Permissions
-
+      app = @otp_app
       raw_perms = @config_with_key.(:permissions)
-      new_perms = Application.get_env(@otp_app, __MODULE__)[:permissions]
+      new_perms = Application.get_env(app, __MODULE__)[:permissions]
       fin_perms = Map.merge(raw_perms, new_perms)
 
       unless raw_perms do
