@@ -139,7 +139,7 @@ defmodule Guardian.Permissions do
 
       raw_perms = @config_with_key.(:permissions)
       new_perms = Application.get_env(__MODULE__, :permissions) |> Guardian.Config.resolve_value()
-      fin_perms = Keyword.merge(raw_perms, new_perms)
+      fin_perms = Map.merge(raw_perms, new_perms)
 
       unless raw_perms do
         raise "Permissions are not defined for #{to_string(__MODULE__)}"
