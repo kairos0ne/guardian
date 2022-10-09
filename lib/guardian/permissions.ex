@@ -137,13 +137,15 @@ defmodule Guardian.Permissions do
 
       defdelegate max(), to: Guardian.Permissions
 
-      # raw_perms = @config_with_key.(:permissions)
-      raw_perms = Application.get_env(:dynamic, __MODULE__)[:permissions]
+      raw_perms = @config_with_key.(:permissions)
+      new_perms = Application.get_env(:dynamic, __MODULE__)[:permissions]
+      fin_perms = Keyword.merge(raw_perms, new_perms)
+
       unless raw_perms do
         raise "Permissions are not defined for #{to_string(__MODULE__)}"
       end
 
-      @normalized_perms Guardian.Permissions.normalize_permissions(raw_perms)
+      @normalized_perms Guardian.Permissions.normalize_permissions(fin_perms)
       @available_permissions Guardian.Permissions.available_from_normalized(@normalized_perms)
 
       @doc """
