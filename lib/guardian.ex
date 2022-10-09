@@ -360,8 +360,8 @@ defmodule Guardian do
 
       # update config for mudule
 
-      def update_config(the_otp_app, the_opts) do
-        the_otp_app |> Application.compile_env(__MODULE__, []) |> Keyword.merge(the_opts)
+      def update_config() do
+        @config.()
       end
       @doc """
       Fetches the configuration for this module.
