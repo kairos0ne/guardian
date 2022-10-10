@@ -386,7 +386,10 @@ defmodule Guardian.Permissions do
         raise ArgumentError, "No permissions found in config. Please add a config for #{config}"
 
       perms ->
-        Map.merge(perms, config)
+        old_perms = normalize_permissions(perms)
+        new_perms = normalize_permissions(config)
+
+        Map.merge(old_perms, new_perms)
     end
   end
 end
