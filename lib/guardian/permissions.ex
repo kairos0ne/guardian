@@ -136,8 +136,8 @@ defmodule Guardian.Permissions do
       import unquote(Keyword.get(opts, :encoding, Guardian.Permissions.BitwiseEncoding))
 
       defdelegate max(), to: Guardian.Permissions
-
-      raw_perms = Application.get_env(__MODULE__, :permissions, %{})
+      app = @otp_app
+      raw_perms = Application.get_env(app, __MODULE__)[:permissions]
 
       unless raw_perms do
         raise "Permissions are not defined for #{to_string(__MODULE__)}"
