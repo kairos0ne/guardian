@@ -143,15 +143,15 @@ defmodule Guardian.Permissions do
         raise "Permissions are not defined for #{to_string(__MODULE__)}"
       end
 
-      @normalized_perms Guardian.Permissions.normalized_permissions
+      @normalized_perms Guardian.Permissions.norm_permissions
       @available_permissions Guardian.Permissions.available_permissions
 
       @doc """
       Returns a map of the permissions available for this module.
       """
-      @spec normalized_permissions() :: Guardian.Permissions.t()
+      @spec norm_permissions() :: Guardian.Permissions.t()
       # def available_permissions, do: @available_permissions
-      def normalized_permissions do
+      def norm_permissions do
         app = @otp_app
         Application.get_env(app, __MODULE__)[:permissions] |> Guardian.Permissions.normalize_permissions
       end
