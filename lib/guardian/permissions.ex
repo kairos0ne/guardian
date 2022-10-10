@@ -155,7 +155,7 @@ defmodule Guardian.Permissions do
       # def available_permissions, do: @available_permissions
       def available_permissions do
         app = @otp_app
-        Application.get_env(app, __MODULE__)[:permissions] |> normalize_permissions |> available_from_normalized
+        Application.get_env(app, __MODULE__)[:permissions] |> Guardian.Permissions.normalize_permissions |> Guardian.Permissions.available_from_normalized
       end
 
       @doc """
