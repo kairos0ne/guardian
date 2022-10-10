@@ -143,8 +143,8 @@ defmodule Guardian.Permissions do
         raise "Permissions are not defined for #{to_string(__MODULE__)}"
       end
 
-      @normalized_perms normal_perms()
-      @available_permissions Guardian.Permissions.available_from_normalized(@normalized_perms)
+      @normalized_perms Guardian.Permissions.normal_perms()
+      @available_permissions Guardian.Permissions.available_permissions()
 
       @doc """
       Lists all permissions in a normalized way using
