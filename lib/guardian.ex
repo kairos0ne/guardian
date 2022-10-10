@@ -364,7 +364,7 @@ defmodule Guardian do
 
       @spec update_permissions(permissions :: map) :: :ok
       def update_permissions(permissions) do
-        Application.put_env(unquote(otp_app), __MODULE__, Keyword.put(config(), :permissions, permissions)) |> :ok
+        Application.put_env(unquote(otp_app), __MODULE__, Keyword.put(config(), :permissions, permissions))
       end
 
       @doc """
