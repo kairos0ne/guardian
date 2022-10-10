@@ -381,7 +381,12 @@ defmodule Guardian.Permissions do
 
   @doc false
   def get_table_permissions(otp_app, config) do
-    config
-    |> Map.merge(Application.get_env(otp_app, __MODULE__)[:permissions \\ %{}])
+    case Application.get_env(otp_app, :permissions) do
+      nil ->
+        raise ArgumentError, "No permissions found in config. Please add a config for #{config}"
+
+      perms ->
+        Map.merge(perms, config)
+    end
   end
 end
