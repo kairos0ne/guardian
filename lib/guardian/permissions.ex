@@ -142,7 +142,7 @@ defmodule Guardian.Permissions do
         raise "Permissions are not defined for #{to_string(__MODULE__)}"
       end
 
-      @normalized_perms unquote(__MODULE__).get_table_permissions(unquote(@otp_app))
+      @normalized_perms get_table_permissions(unquote(@otp_app))
       @available_permissions Guardian.Permissions.available_from_normalized(@normalized_perms)
 
       def available_permissions, do: @available_permissions
