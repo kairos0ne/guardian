@@ -142,15 +142,12 @@ defmodule Guardian.Permissions do
         raise "Permissions are not defined for #{to_string(__MODULE__)}"
       end
 
-      @normalized_perms get_table_permissions(unquote(@otp_app))
+      @normalized_perms Guardian.Permissions.get_table_permissions(unquote(@otp_app))
       @available_permissions Guardian.Permissions.available_from_normalized(@normalized_perms)
 
       def available_permissions, do: @available_permissions
 
-      @doc false
-      def get_table_permissions(otp_app) do
-        Application.get_env(otp_app, __MODULE__)[:permissions]
-      end
+
       @doc """
       Decodes permissions from the permissions found in claims (encoded to integers) or
       from a list of permissions.
@@ -382,5 +379,10 @@ defmodule Guardian.Permissions do
       list = v |> Map.keys() |> Enum.map(&String.to_atom/1)
       {String.to_atom(k), list}
     end
+  end
+
+  @doc false
+  def get_table_permissions(otp_app) do
+    Application.get_env(otp_app, __MODULE__)[:permissions]
   end
 end
