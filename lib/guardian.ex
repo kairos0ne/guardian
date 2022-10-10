@@ -358,11 +358,15 @@ defmodule Guardian do
       @spec default_token_type() :: String.t()
       def default_token_type, do: "access"
 
-      # update config for mudule
+      @doc """
+      Updates permissions in config
+      """
 
-      def update_config() do
-        unquote(@config.())
+      @spec update_permissions(permissions :: map) :: :ok
+      def update_permissions(permissions) do
+        Application.put_env(unquote(otp_app), __MODULE__, Keyword.put(@config.(), :permissions, permissions))
       end
+
       @doc """
       Fetches the configuration for this module.
       """

@@ -136,16 +136,14 @@ defmodule Guardian.Permissions do
       import unquote(Keyword.get(opts, :encoding, Guardian.Permissions.BitwiseEncoding))
 
       defdelegate max(), to: Guardian.Permissions
-      app = @otp_app
+
       raw_perms = @config_with_key.(:permissions)
-      new_perms = Application.get_env(app, :permissions, %{})
-      fin_perms = Map.merge(raw_perms, new_perms)
 
       unless raw_perms do
         raise "Permissions are not defined for #{to_string(__MODULE__)}"
       end
 
-      @normalized_perms Guardian.Permissions.normalize_permissions(fin_perms)
+      @normalized_perms Guardian.Permissions.normalize_permissions(raw_perms)
       @available_permissions Guardian.Permissions.available_from_normalized(@normalized_perms)
 
       @doc """
