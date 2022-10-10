@@ -152,7 +152,10 @@ defmodule Guardian.Permissions do
       """
 
       @spec available_permissions() :: Guardian.Permissions.t()
-      def available_permissions, do: @available_permissions
+      # def available_permissions, do: @available_permissions
+      def available_permissions do
+        Application.get_env(app, __MODULE__)[:permissions] |> normalize_permissions |> available_from_normalized
+      end
 
       @doc """
       Decodes permissions from the permissions found in claims (encoded to integers) or
