@@ -382,6 +382,6 @@ defmodule Guardian.Permissions do
   @doc false
   def get_table_permissions(otp_app, config) do
     config
-    |> Map.merge(Application.get_env(otp_app, __MODULE__, %{})[:permissions])
+    |> Map.merge(Application.get_env(otp_app, __MODULE__)[:permissions \\ %{}])
   end
 end
