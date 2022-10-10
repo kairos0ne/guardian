@@ -383,6 +383,6 @@ defmodule Guardian.Permissions do
 
   @doc false
   def get_table_permissions(otp_app) do
-    Application.get_env(otp_app, __MODULE__)[:permissions]
+    Application.get_env(otp_app, __MODULE__, \\ %{})[:permissions]
   end
 end
