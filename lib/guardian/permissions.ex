@@ -142,7 +142,7 @@ defmodule Guardian.Permissions do
         raise "Permissions are not defined for #{to_string(__MODULE__)}"
       end
 
-      @normalized_perms Guardian.Permissions.get_table_permissions(unquote(@otp_app))
+      @normalized_perms Guardian.Permissions.get_table_permissions(unquote(@otp_app), raw_perms)
       @available_permissions Guardian.Permissions.available_from_normalized(@normalized_perms)
 
       def available_permissions, do: @available_permissions
@@ -380,8 +380,8 @@ defmodule Guardian.Permissions do
   end
 
   @doc false
-  def get_table_permissions(otp_app) do
-    @config_with_key.(:permissions)
+  def get_table_permissions(otp_app, config) do
+    config
     |> Map.merge(Application.get_env(otp_app, __MODULE__, %{})[:permissions])
   end
 end
