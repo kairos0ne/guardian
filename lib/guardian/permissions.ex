@@ -137,17 +137,19 @@ defmodule Guardian.Permissions do
 
       defdelegate max(), to: Guardian.Permissions
 
-      raw_perms = @config_with_key.(:permissions)
-
       unless raw_perms do
         raise "Permissions are not defined for #{to_string(__MODULE__)}"
       end
 
-      @normalized_perms Guardian.Permissions.normalize_permissions(raw_perms)
+      @normalized_perms unquote(__MODULE__).get_table_permissions(unquote(otp_app))
       @available_permissions Guardian.Permissions.available_from_normalized(@normalized_perms)
 
       def available_permissions, do: @available_permissions
 
+      @doc false
+      def get_table_permissions(otp_app) do
+        Application.get_env(otp_app, __MODULE__)[:permissions]
+      end
       @doc """
       Decodes permissions from the permissions found in claims (encoded to integers) or
       from a list of permissions.
@@ -345,6 +347,7 @@ defmodule Guardian.Permissions do
   for a permission set.
   """
   def max, do: -1
+
 
   @doc false
   def normalize_permissions(perms) do
