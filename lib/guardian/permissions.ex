@@ -136,15 +136,17 @@ defmodule Guardian.Permissions do
       import unquote(Keyword.get(opts, :encoding, Guardian.Permissions.BitwiseEncoding))
 
       defdelegate max(), to: Guardian.Permissions
-      app = @otp_app
-      raw_perms = Application.get_env(app, __MODULE__)[:permissions]
+
+      raw_perms = @config_with_key.(:permissions)
 
       unless raw_perms do
         raise "Permissions are not defined for #{to_string(__MODULE__)}"
       end
 
-      @normalized_perms Guardian.Permissions.normal_perms()
-      @available_permissions Guardian.Permissions.available_permissions()
+      @normalized_perms Guardian.Permissions.normalize_permissions(raw_perms)
+      @available_permissions Guardian.Permissions.available_from_normalized(@normalized_perms)
+
+      def available_permissions, do: @available_permissions
 
       @doc """
       Decodes permissions from the permissions found in claims (encoded to integers) or
@@ -376,24 +378,5 @@ defmodule Guardian.Permissions do
       list = v |> Map.keys() |> Enum.map(&String.to_atom/1)
       {String.to_atom(k), list}
     end
-  end
-
-  @doc false
-
-  @spec available_permissions() :: Guardian.Permissions.t()
-  def available_permissions do
-    app = @otp_app
-
-    Application.get_env(app, __MODULE__)[:permissions]
-    |> Guardian.Permissions.normalize_permissions()
-    |> Guardian.Permissions.available_from_normalized()
-  end
-
-  @doc false
-
-  @spec available_permissions() :: Guardian.Permissions.t()
-  def normal_perms do
-    app = @otp_app
-    Application.get_env(app, __MODULE__)[:permissions] |> Guardian.Permissions.normalize_permissions()
   end
 end
