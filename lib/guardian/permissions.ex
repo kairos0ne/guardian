@@ -143,18 +143,8 @@ defmodule Guardian.Permissions do
         raise "Permissions are not defined for #{to_string(__MODULE__)}"
       end
 
-      @normalized_perms Guardian.Permissions.norm_permissions
-      @available_permissions Guardian.Permissions.available_permissions
-
-      @doc """
-      Returns a map of the permissions available for this module.
-      """
-      @spec norm_permissions() :: Guardian.Permissions.t()
-      # def available_permissions, do: @available_permissions
-      def norm_permissions do
-        app = @otp_app
-        Application.get_env(app, __MODULE__)[:permissions] |> Guardian.Permissions.normalize_permissions
-      end
+      @normalized_perms normal_perms()
+      @available_permissions Guardian.Permissions.available_from_normalized(@normalized_perms)
 
       @doc """
       Lists all permissions in a normalized way using
@@ -168,6 +158,12 @@ defmodule Guardian.Permissions do
         Application.get_env(app, __MODULE__)[:permissions] |> Guardian.Permissions.normalize_permissions |> Guardian.Permissions.available_from_normalized
       end
 
+      def normal_perms do
+        app = @otp_app
+        Application.get_env(app, __MODULE__)[:permissions] |> Guardian.Permissions.normalize_permissions
+      end
+
+      def
       @doc """
       Decodes permissions from the permissions found in claims (encoded to integers) or
       from a list of permissions.
