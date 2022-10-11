@@ -366,7 +366,7 @@ defmodule Guardian do
       def update_permissions(permissions) do
         Application.put_env(unquote(otp_app), __MODULE__, Keyword.put(config(), :permissions, permissions))
         # recompile module from new config
-        Code.delete(__MODULE__)
+        Code.eval_file(__MODULE__)
       end
 
       @doc """
