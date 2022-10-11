@@ -142,7 +142,7 @@ defmodule Guardian.Permissions do
         raise "Permissions are not defined for #{to_string(__MODULE__)}"
       end
 
-      @normalized_perms Guardian.Permissions.get_table_permissions(unquote(@otp_app), raw_perms)
+      @normalized_perms Guardian.Permissions.normalize_permissions(raw_perms)
       @available_permissions Guardian.Permissions.available_from_normalized(@normalized_perms)
 
       def available_permissions, do: @available_permissions
@@ -376,20 +376,6 @@ defmodule Guardian.Permissions do
     for {k, v} <- perms, into: %{} do
       list = v |> Map.keys() |> Enum.map(&String.to_atom/1)
       {String.to_atom(k), list}
-    end
-  end
-
-  @doc false
-  def get_table_permissions(otp_app, config) do
-    case Application.get_env(otp_app, :permissions) do
-      nil ->
-        raise ArgumentError, "No permissions found in config. Please add a config for #{config}"
-
-      perms ->
-        old_perms = normalize_permissions(perms)
-        new_perms = normalize_permissions(config)
-
-        Map.merge(old_perms, new_perms)
     end
   end
 end
