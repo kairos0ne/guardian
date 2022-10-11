@@ -137,15 +137,25 @@ defmodule Guardian.Permissions do
 
       defdelegate max(), to: Guardian.Permissions
       raw_perms = @config_with_key.(:permissions)
+      runntime_perms = Application.get_env(__MODULE__, :permissions, %{})
+      permissions = Map.merge(raw_perms, runntime_perms)
 
       unless raw_perms do
         raise "Permissions are not defined for #{to_string(__MODULE__)}"
       end
 
-      @normalized_perms Guardian.Permissions.normalize_permissions(raw_perms)
-      @available_permissions Guardian.Permissions.available_from_normalized(@normalized_perms)
+      normalized_perms = Guardian.Permissions.normalize_permissions(permissions)
+      available_perms = Guardian.Permissions.available_from_normalized(normalized_perms)
 
-      def available_permissions, do: @available_permissions
+
+      def get_normalized_permissions do
+        unquote(normalized_perms)
+      end
+
+
+      def get_available_permissions do
+        unquote(available_perms)
+      end
 
       @doc """
       Decodes permissions from the permissions found in claims (encoded to integers) or
@@ -166,12 +176,11 @@ defmodule Guardian.Permissions do
       def decode_permissions(nil), do: %{}
 
       def decode_permissions(map) when is_map(map) do
-        for {k, v} <- map, Map.get(@normalized_perms, to_string(k)) != nil, into: %{} do
+        for {k, v} <- map, Map.get(get_normalized_permissions(), to_string(k)) != nil, into: %{} do
           key = k |> to_string() |> String.to_atom()
           {key, do_decode_permissions(v, k)}
         end
       end
-
       @doc """
       Decodes permissions directly from a claims map. This does the same as `decode_permissions` but
       will fetch the permissions map from the `"pem"` key where `Guardian.Permissions places them
@@ -282,24 +291,24 @@ defmodule Guardian.Permissions do
         do: do_decode_permissions(value, to_string(type))
 
       defp do_decode_permissions(value, type) when is_integer(value) do
-        decode(value, type, @normalized_perms)
+        decode(value, type, get_normalized_permissions())
       end
 
       defp do_decode_permissions(value, type) do
         do_validate_permissions!({type, value})
-        decode(value, type, @normalized_perms)
+        decode(value, type, get_normalized_permissions())
       end
 
       defp do_encode_permissions!(value, type) when is_atom(type),
         do: do_encode_permissions!(value, to_string(type))
 
       defp do_encode_permissions!(value, type) when is_integer(value) do
-        encode(value, type, @normalized_perms)
+        encode(value, type, get_normalized_permissions())
       end
 
       defp do_encode_permissions!(value, type) do
         do_validate_permissions!({type, value})
-        encode(value, type, @normalized_perms)
+        encode(value, type, get_normalized_permissions())
       end
 
       defp do_validate_permissions!({type, value}) when is_atom(type),
@@ -311,7 +320,7 @@ defmodule Guardian.Permissions do
       end
 
       defp do_validate_permissions!({type, list}) when is_list(list) do
-        perm_set = Map.get(@normalized_perms, type)
+        perm_set = Map.get(get_normalized_permissions(), type)
 
         if perm_set do
           provided_set = list |> Enum.map(&to_string/1) |> MapSet.new()
