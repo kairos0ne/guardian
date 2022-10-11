@@ -342,7 +342,7 @@ defmodule Guardian do
       # Provide a way to get at the configuration during compile time
       # for other macros that may want to use them
       @config fn ->
-        the_otp_app |> Application.get_env(__MODULE__, []) |> Keyword.merge(the_opts)
+        the_otp_app |> Application.compile_env(__MODULE__, []) |> Keyword.merge(the_opts)
       end
       @config_with_key fn key ->
         @config.() |> Keyword.get(key) |> Guardian.Config.resolve_value()
@@ -365,8 +365,7 @@ defmodule Guardian do
       @spec update_permissions(permissions :: map) :: :ok
       def update_permissions(permissions) do
         Application.put_env(unquote(otp_app), __MODULE__, Keyword.put(config(), :permissions, permissions))
-        # recompile module from new config
-        Code.eval_file(__MODULE__)
+        @normalized_permissions @config_with_key.(:permissions)
       end
 
       @doc """
