@@ -136,26 +136,25 @@ defmodule Guardian.Permissions do
       import unquote(Keyword.get(opts, :encoding, Guardian.Permissions.BitwiseEncoding))
 
       defdelegate max(), to: Guardian.Permissions
-      raw_perms = @config_with_key.(:permissions)
-      runntime_perms = Application.get_env(__MODULE__, :permissions, %{})
-      permissions = Map.merge(raw_perms, runntime_perms)
+      raw_perms = Application.get_env(__MODULE__, :permissions, %{})
 
       unless raw_perms do
         raise "Permissions are not defined for #{to_string(__MODULE__)}"
       end
 
-      normalized_perms = Guardian.Permissions.normalize_permissions(permissions)
-      available_perms = Guardian.Permissions.available_from_normalized(normalized_perms)
-
-
       def get_normalized_permissions do
-        unquote(normalized_perms)
+        @config_with_key.(:permissions)
+        |> Map.merge(
+          Application.get_env(__MODULE__, :permissions, %{})
+          |> Guardian.Permissions.normalize_permissions()
+        )
       end
-
 
       def get_available_permissions do
-        unquote(available_perms)
+        __MODULE__.get_normalized_permissions() |> Guardian.Permissions.available_from_normalized()
       end
+
+      def available_permissions, do: __MODULE__.get_available_permissions()
 
       @doc """
       Decodes permissions from the permissions found in claims (encoded to integers) or
@@ -181,6 +180,7 @@ defmodule Guardian.Permissions do
           {key, do_decode_permissions(v, k)}
         end
       end
+
       @doc """
       Decodes permissions directly from a claims map. This does the same as `decode_permissions` but
       will fetch the permissions map from the `"pem"` key where `Guardian.Permissions places them
