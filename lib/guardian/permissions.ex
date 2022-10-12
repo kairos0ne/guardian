@@ -143,7 +143,7 @@ defmodule Guardian.Permissions do
       end
 
       def get_normalized_permissions do
-        @config_with_key.(:permissions)
+        Guardian.Permissions.normalize_permissions(raw_perms)
         |> Map.merge(
           Application.get_env(__MODULE__, :permissions, %{})
           |> Guardian.Permissions.normalize_permissions()
