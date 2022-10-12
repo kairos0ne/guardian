@@ -143,7 +143,7 @@ defmodule Guardian.Permissions do
       end
 
       def get_normalized_permissions do
-        Application.get_env(__MODULE__, :permissions, %{})
+        Application.get_env(unquote(Keyword.get(opts, :otp_app, :dynamic)), __MODULE__)[:permissions]
         |> Guardian.Permissions.normalize_permissions()
       end
 
