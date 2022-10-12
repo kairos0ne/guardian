@@ -143,11 +143,8 @@ defmodule Guardian.Permissions do
       end
 
       def get_normalized_permissions do
-        Guardian.Permissions.normalize_permissions(unquote(raw_perms))
-        |> Map.merge(
-          Application.get_env(__MODULE__, :permissions, %{})
-          |> Guardian.Permissions.normalize_permissions()
-        )
+        Application.get_env(__MODULE__, :permissions, %{})
+        |> Guardian.Permissions.normalize_permissions()
       end
 
       def get_available_permissions do
