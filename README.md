@@ -1,3 +1,5 @@
+# This is a fork of https://github.com/ueberauth/guardian - please see the main library as I've modified this slightly to allow updates to config permissions at runtime.
+
 # Guardian
 
 > An authentication library for use with Elixir applications.
