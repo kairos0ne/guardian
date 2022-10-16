@@ -335,7 +335,7 @@ defmodule Guardian do
           Macro.Env.location(__ENV__)
         )
       end
-      @otp_app unquote(otp_app)
+
       the_otp_app = unquote(otp_app)
       the_opts = unquote(opts)
 
