@@ -143,6 +143,7 @@ defmodule Guardian.Permissions do
       end
 
       def get_normalized_permissions do
+        raw_perms = @config_with_key.(:permissions)
         # merge raw permissions with the permissions defined in the config
         # this allows for the permissions to be defined in the config and
         # overridden in the module
