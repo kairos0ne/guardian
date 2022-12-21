@@ -142,11 +142,13 @@ defmodule Guardian.Permissions do
         raise "Permissions are not defined for #{to_string(__MODULE__)}"
       end
 
-      def get_normalized_permissions(raw_perms) do
+      @raw_perms raw_perms
+
+      def get_normalized_permissions do
         # this allows for the permissions to be defined in the config and
         # overridden in the module
-        raw_perms
-        |> Map.merge(Application.get_env(unquote(Keyword.get(opts, :otp_app)), __MODULE__)[:permissions])
+        @raw_perms
+        |> Map.merge(Application.get_env(unquote(Keyword.get(opts, :otp_app, [])), __MODULE__)[:permissions])
         |> Guardian.Permissions.normalize_permissions()
       end
 
