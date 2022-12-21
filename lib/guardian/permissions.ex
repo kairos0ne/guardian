@@ -147,7 +147,7 @@ defmodule Guardian.Permissions do
         # this allows for the permissions to be defined in the config and
         # overridden in the module
 
-        Application.get_env(unquote(Keyword.get(opts, :otp_app, [])), __MODULE__)[:permissions]
+        Application.get_env(unquote(Keyword.get(opts, :otp_app)), __MODULE__)[:permissions]
         |> Keyword.merge(raw_perms)
         |> Guardian.Permissions.normalize_permissions()
       end
