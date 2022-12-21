@@ -142,10 +142,8 @@ defmodule Guardian.Permissions do
         raise "Permissions are not defined for #{to_string(__MODULE__)}"
       end
 
-      @permissions  Application.get_env(unquote(Keyword.get(opts, :otp_app, :dynamic)), __MODULE__)[:permissions] |> Map.merge(raw_perms)
-
       def get_normalized_permissions do
-        @permissions
+        Application.get_env(unquote(Keyword.get(opts, :otp_app, :dynamic)), __MODULE__)[:permissions]
         |> Guardian.Permissions.normalize_permissions()
       end
 
