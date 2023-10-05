@@ -136,6 +136,7 @@ defmodule Guardian.Permissions do
       import unquote(Keyword.get(opts, :encoding, Guardian.Permissions.BitwiseEncoding))
 
       defdelegate max(), to: Guardian.Permissions
+
       raw_perms = @config_with_key.(:permissions)
 
       unless raw_perms do
