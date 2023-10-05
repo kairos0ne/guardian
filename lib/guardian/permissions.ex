@@ -148,7 +148,7 @@ defmodule Guardian.Permissions do
         # Specify runnning application with `otp_app: :my_app`
         # Needs to be refactored to use an application env variable
 
-        Application.get_env(unquote(Keyword.get(opts, :otp_app, :dynamic)), __MODULE__)[:permissions]
+        Application.get_env(unquote(Keyword.get(opts, :otp_app, :dynamic)), __MODULE__, [])[:permissions]
         |> Guardian.Permissions.normalize_permissions()
       end
 
