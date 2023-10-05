@@ -143,13 +143,7 @@ defmodule Guardian.Permissions do
       end
 
       def get_normalized_permissions do
-        # This requires that the permissions are defined in the config
-        # or passed in as an option to `use Guardian`
-        # Specify runnning application with `otp_app: :my_app`
-        # Needs to be refactored to use an application env variable
-
-        Application.get_env(unquote(Keyword.get(opts, :otp_app, :dynamic)), __MODULE__, [])[:permissions]
-        |> Guardian.Permissions.normalize_permissions()
+        __MODULE__.normalize_permissions(raw_perms)
       end
 
       def get_available_permissions do
