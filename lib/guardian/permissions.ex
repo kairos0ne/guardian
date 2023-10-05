@@ -142,13 +142,10 @@ defmodule Guardian.Permissions do
         raise "Permissions are not defined for #{to_string(__MODULE__)}"
       end
 
-      def get_normalized_permissions do
-        # This requires that the permissions are defined in the config
-        # or passed in as an option to `use Guardian`
-        # Specify runnning application with `otp_app: :my_app`
-        # Needs to be refactored to use an application env variable
+      @permissions  Application.get_env(unquote(Keyword.get(opts, :otp_app, :dynamic)), __MODULE__)[:permissions] |> Map.merge(raw_perms)
 
-        Application.get_env(unquote(Keyword.get(opts, :otp_app, :dynamic)), __MODULE__)[:permissions]
+      def get_normalized_permissions do
+        @permissions
         |> Guardian.Permissions.normalize_permissions()
       end
 
