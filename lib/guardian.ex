@@ -339,14 +339,17 @@ defmodule Guardian do
       the_otp_app = unquote(otp_app)
       the_opts = unquote(opts)
 
-      @config_permissions fn ->
-        perms =
-          Application.compile_env(the_otp_app, [__MODULE__, :permissions]) ||
-            Keyword.get(the_opts, :permissions, [])
-
-        Guardian.Config.resolve_value(perms)
+      # Provide a way to get at the configuration during compile time
+      # for other macros that may want to use them
+      @config fn ->
+        the_otp_app |> Application.compile_env(__MODULE__, []) |> Keyword.merge(the_opts)
       end
-
+      @config_with_key fn key ->
+        @config.() |> Keyword.get(key) |> Guardian.Config.resolve_value()
+      end
+      @config_with_key_and_default fn key, default ->
+        @config.() |> Keyword.get(key, default) |> Guardian.Config.resolve_value()
+      end
 
       @doc """
       The default type of token for this module.
@@ -361,7 +364,7 @@ defmodule Guardian do
 
       @spec update_permissions(permissions :: map) :: :ok
       def update_permissions(permissions) do
-        Application.put_env(the_otp_app, [__MODULE__, :permissions], permissions)
+        Application.put_env(unquote(otp_app), __MODULE__, Keyword.put(config(), :permissions, permissions))
       end
 
       @doc """
@@ -372,7 +375,7 @@ defmodule Guardian do
       def config,
         do:
           unquote(otp_app)
-          |> Application.get_env!(__MODULE__, [])
+          |> Application.get_env(__MODULE__, [])
           |> Keyword.merge(unquote(opts))
 
       @doc """
