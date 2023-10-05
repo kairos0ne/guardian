@@ -339,15 +339,14 @@ defmodule Guardian do
       the_otp_app = unquote(otp_app)
       the_opts = unquote(opts)
 
-      @config fn ->
-        the_otp_app |> Application.fetch_env!(__MODULE__) |> Keyword.merge(the_opts)
+      @config_permissions fn ->
+        perms =
+          Application.compile_env(the_otp_app, [__MODULE__, :permissions]) ||
+            Keyword.get(the_opts, :permissions, [])
+
+        Guardian.Config.resolve_value(perms)
       end
-      @config_with_key fn key ->
-        @config.() |> Keyword.get(key) |> Guardian.Config.resolve_value()
-      end
-      @config_with_key_and_default fn key, default ->
-        @config.() |> Keyword.get(key, default) |> Guardian.Config.resolve_value()
-      end
+
 
       @doc """
       The default type of token for this module.
@@ -373,7 +372,7 @@ defmodule Guardian do
       def config,
         do:
           unquote(otp_app)
-          |> Application.fetch_env!(__MODULE__, [])
+          |> Application.get_env(__MODULE__, [])
           |> Keyword.merge(unquote(opts))
 
       @doc """
