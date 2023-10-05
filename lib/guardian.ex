@@ -375,7 +375,7 @@ defmodule Guardian do
       def config,
         do:
           unquote(otp_app)
-          |> Application.get_env(__MODULE__)
+          |> Application.get_env(__MODULE__, [])
           |> Keyword.merge(unquote(opts))
 
       @doc """
