@@ -340,7 +340,7 @@ defmodule Guardian do
       the_opts = unquote(opts)
 
       @config fn ->
-        the_otp_app |> Application.get_env(__MODULE__, []) |> Keyword.merge(the_opts)
+        the_otp_app |> Application.fetch_env!(__MODULE__) |> Keyword.merge(the_opts)
       end
       @config_with_key fn key ->
         @config.() |> Keyword.get(key) |> Guardian.Config.resolve_value()
