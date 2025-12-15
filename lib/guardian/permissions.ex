@@ -131,7 +131,9 @@ defmodule Guardian.Permissions do
   defmacro __using__(opts \\ []) do
     # Credo is incorrectly identifying an unless block with negated condition 2017-06-10
     # credo:disable-for-next-line /\.Refactor\./
-    quote do
+    otp_app = Keyword.fetch!(opts, :otp_app)
+
+    quote bind_quoted: [otp_app: otp_app, opts: opts] do
       alias Guardian.Permissions.PermissionNotFoundError
       import unquote(Keyword.get(opts, :encoding, Guardian.Permissions.BitwiseEncoding))
 
@@ -144,7 +146,9 @@ defmodule Guardian.Permissions do
       end
 
       def get_normalized_permissions do
-        Application.get_env(unquote(Keyword.get(opts, :otp_app, :dynamic)), __MODULE__)[:permissions]
+        otp_app
+        |> Application.get_env(__MODULE__, [])
+        |> Keyword.fetch!(:permissions)
         |> Guardian.Permissions.normalize_permissions()
       end
 
