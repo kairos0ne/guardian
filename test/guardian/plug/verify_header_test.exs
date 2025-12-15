@@ -1,7 +1,8 @@
 defmodule Guardian.Plug.VerifyHeaderTest do
   @moduledoc false
 
-  use Plug.Test
+  import Plug.Test
+  import Plug.Conn
   use ExUnit.Case, async: true
 
   import ExUnit.CaptureIO
@@ -127,11 +128,36 @@ defmodule Guardian.Plug.VerifyHeaderTest do
   end
 
   test "getting the scheme config" do
-    opts = VerifyHeader.init(realm: "Bearer")
-    assert opts[:scheme_reg] == ~r/Bearer:? +(.*)$/i
+    opts = VerifyHeader.init(scheme: "Bearer")
+    assert opts[:scheme_reg] == "Bearer:? +(.*)$"
 
     opts = VerifyHeader.init(scheme: "Basic")
-    assert opts[:scheme_reg] == ~r/Basic:? +(.*)$/i
+    assert opts[:scheme_reg] == "Basic:? +(.*)$"
+  end
+
+  test "correctly reading the token from the header", ctx do
+    conn =
+      :get
+      |> conn("/")
+      |> put_req_header("authorization", "Basic #{ctx.token}")
+      |> VerifyHeader.call(
+        Keyword.merge(VerifyHeader.init(scheme: "Basic"), module: ctx.impl, error_handler: ctx.handler)
+      )
+
+    refute conn.status == 401
+    assert Guardian.Plug.current_token(conn) == ctx.token
+  end
+
+  test "ignoring token from header with non-matching scheme", ctx do
+    conn =
+      :get
+      |> conn("/")
+      |> put_req_header("authorization", "Bearer #{ctx.token}")
+      |> VerifyHeader.call(
+        Keyword.merge(VerifyHeader.init(scheme: "Basic"), module: ctx.impl, error_handler: ctx.handler)
+      )
+
+    refute Guardian.Plug.current_token(conn) == ctx.token
   end
 
   test "with a token and mismatching claims", ctx do

@@ -136,9 +136,10 @@ defmodule Guardian.Permissions do
       import unquote(Keyword.get(opts, :encoding, Guardian.Permissions.BitwiseEncoding))
 
       defdelegate max(), to: Guardian.Permissions
-      raw_perms = @config_with_key.(:permissions)
 
-      unless raw_perms do
+      raw_perms = @config_permissions.()
+
+      if !raw_perms do
         raise "Permissions are not defined for #{to_string(__MODULE__)}"
       end
 
@@ -180,7 +181,7 @@ defmodule Guardian.Permissions do
 
       @doc """
       Decodes permissions directly from a claims map. This does the same as `decode_permissions` but
-      will fetch the permissions map from the `"pem"` key where `Guardian.Permissions places them
+      will fetch the permissions map from the `"pem"` key where `Guardian.Permissions` places them
       when it encodes them into claims.
       """
       @spec decode_permissions_from_claims(Guardian.Token.claims()) :: Guardian.Permissions.t()

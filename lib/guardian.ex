@@ -339,16 +339,20 @@ defmodule Guardian do
       the_otp_app = unquote(otp_app)
       the_opts = unquote(opts)
 
-      # Provide a way to get at the configuration during compile time
-      # for other macros that may want to use them
-      @config fn ->
-        the_otp_app |> Application.compile_env(__MODULE__, []) |> Keyword.merge(the_opts)
-      end
-      @config_with_key fn key ->
-        @config.() |> Keyword.get(key) |> Guardian.Config.resolve_value()
-      end
-      @config_with_key_and_default fn key, default ->
-        @config.() |> Keyword.get(key, default) |> Guardian.Config.resolve_value()
+      # Provide a way to get at the permissions during compile time. Uses
+      # permissions from config if they are available and falls back to the
+      # permissins defined on the `use Guardian` implementation
+      #
+      # NOTE: Generally you can't use compile_env for most keys because that
+      # would prevent people from changing them at runtime for differen
+      # environements.And hardcoding secret keys wouldn't be considered a good
+      # practice.
+      @config_permissions fn ->
+        perms =
+          Application.compile_env(the_otp_app, [__MODULE__, :permissions]) ||
+            Keyword.get(the_opts, :permissions, [])
+
+        Guardian.Config.resolve_value(perms)
       end
 
       @doc """
@@ -526,7 +530,7 @@ defmodule Guardian do
   Provides the current system time in seconds.
   """
   @spec timestamp() :: pos_integer
-  def timestamp, do: System.system_time(:second)
+  def timestamp, do: DateTime.to_unix(DateTime.utc_now())
 
   @doc """
   Converts keys in a map or list of maps to strings.
@@ -584,6 +588,7 @@ defmodule Guardian do
   * `:second` | `:seconds`
   * `:minute` | `:minutes`
   * `:hour` | `:hours`
+  * `:day` | `:days`
   * `:week` | `:weeks`
 
   See the documentation for your implementation / token module for more information on

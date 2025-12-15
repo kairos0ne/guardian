@@ -47,7 +47,7 @@ Add Guardian to your application to your list of dependencies in `mix.exs`:
 ```elixir
 defp deps do
   [
-    {:guardian, "~> 2.0"}
+    {:guardian, "~> 2.3"}
   ]
 end
 ```
@@ -62,7 +62,7 @@ defmodule MyApp.Guardian do
   def subject_for_token(%{id: id}, _claims) do
     # You can use any value for the subject of your token but
     # it should be useful in retrieving the resource later, see
-    # how it being used on `resource_from_claims/1` function.
+    # how it is being used on `resource_from_claims/1` function.
     # A unique `id` is a good subject, a non-unique email address
     # is a poor subject.
     sub = to_string(id)
@@ -120,8 +120,8 @@ Congrats! We have a working Guardian implementation.
 With Plug:
 
 ```elixir
-# If a session is loaded the token/resource/claims will be put into the session and connection
-# If no session is loaded, the token/resource/claims only go onto the connection
+# The token/resource/claims will be stored on the connection.
+# The token will also be stored in the session (if fetched)
 conn = MyApp.Guardian.Plug.sign_in(conn, resource)
 
 # Optionally with claims and options
