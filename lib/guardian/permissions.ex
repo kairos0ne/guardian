@@ -131,6 +131,17 @@ defmodule Guardian.Permissions do
   defmacro __using__(opts \\ []) do
     # Credo is incorrectly identifying an unless block with negated condition 2017-06-10
     # credo:disable-for-next-line /\.Refactor\./
+    otp_app =
+      case Keyword.get(opts, :otp_app) do
+        nil ->
+          quote do
+            Application.get_env(:guardian, unquote(__MODULE__))[:otp_app]
+          end
+
+        app ->
+          app
+      end
+
     encoding_mod = Keyword.get(opts, :encoding, Guardian.Permissions.BitwiseEncoding)
 
     quote bind_quoted: [otp_app: otp_app, encoding_mod: encoding_mod] do
